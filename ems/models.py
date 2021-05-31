@@ -58,3 +58,13 @@ class BonusCuts( db.Model):
 
     def __repr__(self):
         return f"BonusCuts('{self.date}', '{self.amount}', '{self.employee_id}')"
+class Salary(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.String, nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    tax = db.Column(db.Float, nullable=False)
+    net = db.Column(db.Float, nullable=False)
+    employee_id = db.Column(db.Integer, db.ForeignKey('employee.id'))
+
+    def __repr__(self):
+        return f"Salary('{self.date}', '{self.amount}', '{self.net}', '{self.employee_id}')"
