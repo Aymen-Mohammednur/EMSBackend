@@ -39,3 +39,22 @@ class Department( db.Model):
 
     def __repr__(self):
         return f"Department('{self.department_title}', '{self.no_of_employees}')"
+class Attendance( db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    employee_id = db.Column(db.Integer, db.ForeignKey('employee.id'))
+    work_time = db.Column(db.Float, nullable=False)
+    date = db.Column(db.String, nullable=False)
+
+
+    def __repr__(self):
+        return f"Attendance('Emplyee ID: {self.employee_id}',Date: {self.date}, Hours Worked: '{self.work_time}')"
+
+class BonusCuts( db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.String, nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    remark = db.Column(db.String, nullable=False)
+    employee_id = db.Column(db.Integer, db.ForeignKey('employee.id'))
+
+    def __repr__(self):
+        return f"BonusCuts('{self.date}', '{self.amount}', '{self.employee_id}')"
