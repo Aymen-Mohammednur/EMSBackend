@@ -7,11 +7,6 @@ from ems.auth import *
 class AttendanceAPI(Resource):
     @token_required_manager
     def post(self):
-        # try:
-        #     attendance_schema.load(request.json)
-        # except:
-        #     abort(400, message="Invalid Request")
-
         if request.is_json:
             employee_id = request.json['employee_id']
             work_time = request.json["work_time"]
@@ -53,11 +48,6 @@ class AttendanceAPI(Resource):
 
     @token_required_manager
     def put(self, attendance_id=None):
-        # try:
-        #     attendance_schema.load(request.json)
-        # except:
-        #     abort(400, message="Invalid Request")
-            
         if not attendance_id: abort(400, "Attendance ID required")
         attendance = Attendance.query.filter_by(id=attendance_id).first()
         if attendance:
