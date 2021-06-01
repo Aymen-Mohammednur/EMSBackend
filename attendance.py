@@ -51,4 +51,83 @@ class AttendanceAPI(Resource):
             else:
                 abort(404, "No attendance records found")
 
-    
+    @token_required_manager
+    def put(self, attendance_id=None):
+        # try:
+        #     attendance_schema.load(request.json)
+        # except:
+        #     abort(400, message="Invalid Request")
+            
+        if not attendance_id: abort(400, "Attendance ID required")
+        attendance = Attendance.query.filter_by(id=attendance_id).first()
+        if attendance:
+            if request.is_json:
+                employee_id = request.json['employee_id']
+                work_time = request.json['work_time']
+            else:
+                employee_id = request.form['employee_id']
+                work_time = request.form['work_time']
+
+            attendance.id = attendance_id
+            attendance.employee_id = employee_id
+            attendance.work_time = work_time
+
+            db.session.commit()
+
+            result = attendance_schema.dump(attendance)
+            response = jsonify(result)
+            response.status_code = 201
+            return response
+        else:
+            abort(404, "No department with that Id")
+
+    @token_required_manager
+    def delete(self, attendance_id = None):
+        if not attendance_id: abort(400, "Attendance ID required")
+        attendance = Attendance.query.filter_by(id=attendance_id).first()
+        if attendance:
+            db.session.delete(attendance)
+            db.session.commit()
+            return jsonify(message="Attendance Entry successfully deleted"), 200
+        else:
+            abort(404, "No attendace entry with that Id")
+    @token_required_manager
+    def put(self, attendance_id=None):
+        # try:
+        #     attendance_schema.load(request.json)
+        # except:
+        #     abort(400, message="Invalid Request")
+            
+        if not attendance_id: abort(400, "Attendance ID required")
+        attendance = Attendance.query.filter_by(id=attendance_id).first()
+        if attendance:
+            if request.is_json:
+                employee_id = request.json['employee_id']
+                work_time = request.json['work_time']
+            else:
+                employee_id = request.form['employee_id']
+                work_time = request.form['work_time']
+
+            attendance.id = attendance_id
+            attendance.employee_id = employee_id
+            attendance.work_time = work_time
+
+            db.session.commit()
+
+            result = attendance_schema.dump(attendance)
+            response = jsonify(result)
+            response.status_code = 201
+            return response
+        else:
+            abort(404, "No department with that Id")
+
+    @token_required_manager
+    def delete(self, attendance_id = None):
+        if not attendance_id: abort(400, "Attendance ID required")
+        attendance = Attendance.query.filter_by(id=attendance_id).first()
+        if attendance:
+            db.session.delete(attendance)
+            db.session.commit()
+            return jsonify(message="Attendance Entry successfully deleted"), 200
+        else:
+            abort(404, "No attendace entry with that Id")
