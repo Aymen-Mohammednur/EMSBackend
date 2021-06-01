@@ -54,3 +54,20 @@ class SalarySchema(ma.Schema):
     tax = fields.Float(required=True)
     net = fields.String(required=True)
     employee_id = fields.Integer(required=True)
+user_schema = UserSchema()
+users_schema = UserSchema(many=True)
+
+employee_schema = EmployeeSchema()
+employees_schema = EmployeeSchema(many=True)
+
+department_schema = EmployeeSchema()
+departments_schema = EmployeeSchema(many=True)
+
+attendance_schema = AttendanceSchema()
+attendances_schema = AttendanceSchema(many=True)
+
+bonus_schema = BonusSchema()
+bonuss_schema = BonusSchema(many=True)
+
+salary_schema = SalarySchema()
+salaries_schema = SalarySchema(many=True)
