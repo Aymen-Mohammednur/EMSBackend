@@ -2,9 +2,16 @@ from flask import request, jsonify
 from flask_restful import Resource, abort
 from ems.models import BonusCuts
 from ems.schemas import bonus_schema, bonuss_schema
-from ems.auth import db
+from ems.auth import *
+
 class BonusCutsAPI(Resource):
+    @token_required_manager
     def post(self):
+        # try:
+        #     bonus_schema.load(request.json)
+        # except:
+        #     abort(400, message="Invalid Request")
+
         if request.is_json:
             employee_id = request.json['employee_id']
             date = request.json['date']
@@ -30,6 +37,7 @@ class BonusCutsAPI(Resource):
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
 
+    @token_required_manager
     def get(self, bonus_id=None):
         if bonus_id:
             bonus = BonusCuts.query.filter_by(id=bonus_id).first()
@@ -51,6 +59,7 @@ class BonusCutsAPI(Resource):
             else:
                 abort(404, "No Bonuses/Cuts found")
 
+    @token_required_manager
     def put(self, bonus_id):
         # try:
         #     bonus_schema.load(request.json)
@@ -86,7 +95,7 @@ class BonusCutsAPI(Resource):
         else:
             abort(404, "No bonus/cut with that Id")
 
-
+    @token_required_manager
     def delete(self, bonus_id):
         bonus_cuts = BonusCuts.query.filter_by(id=bonus_id).first()
         if bonus_cuts:
