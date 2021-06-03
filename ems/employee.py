@@ -46,3 +46,37 @@ class EmployeeAPI(Resource):
             response.status_code = 201
             response.headers.add('Access-Control-Allow-Origin', '*')
             return response
+
+    def get(self, employee_id=None):
+        if employee_id:
+            employee = Employee.query.filter_by(id=employee_id).first()
+            if employee:
+                result = employee_schema.dump(employee)
+                response = jsonify(result)
+                response.status_code = 200
+                response.headers.add('Access-Control-Allow-Origin', '*')
+                return response
+            else:
+                abort(404, message="No employee found")
+        else:
+            employee = Employee.query.all()
+            
+            if employee:
+                results = employees_schema.dump(employee)
+                cache = OrderedDict()
+                print("RESULT:: ", results)
+                for result in results:
+                    dep_id = result["department_id"]
+                    if not dep_id in cache:
+                        dep = Department.query.filter_by(id=dep_id).first()
+                        if dep:
+                            cache[dep_id] = dep.department_title
+                    if cache[dep_id]:
+                        result["department_title"] = cache[dep_id]
+                
+                response = jsonify(results)
+                response.status_code = 200
+                response.headers.add('Access-Control-Allow-Origin', '*')
+                return response
+            else:
+                abort(404, message="No employees found")
