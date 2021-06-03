@@ -8,6 +8,11 @@ from ems.auth import token_required_admin, db
 class ManagerAPI(Resource):
     @token_required_admin
     def post(self):
+        # try:
+        #     user_schema.load(request.json)
+        # except:
+        #     abort(400, message="Invalid Request")
+
         if request.is_json:
             username = request.json['username']
             password = request.json['password']
@@ -33,10 +38,36 @@ class ManagerAPI(Resource):
             response = jsonify(result)
             response.status_code = 201
             return response
+    
+    @token_required_admin
+    def get(self, user_id=None):
+        if user_id:
+            manager = User.query.filter_by(id=user_id).first()
+            if manager:
+                result = user_schema.dump(manager)
+                response = jsonify(result)
+                response.status_code = 200
+                return response
+            else:
+                abort(404, message="No manager with that Id found")
+
+        else:
+            manager = User.query.all()
+            if manager:
+                result = users_schema.dump(manager)
+                response = jsonify(result)
+                response.status_code = 200
+                return response
+            else:
+                abort(404, message="No users found")
 
     @token_required_admin
     def put(self, user_id):
-
+        # try:
+        #     user_schema.load(request.json)
+        # except:
+        #     abort(400, message="Invalid Request")
+            
         manager = User.query.filter_by(id=user_id).first()
         if manager:
             if request.is_json:
@@ -64,3 +95,15 @@ class ManagerAPI(Resource):
 
         else:
             abort(404, message="No user with that Id")
+
+    @token_required_admin
+    def delete(self, user_id):
+        manager = User.query.filter_by(id=user_id).first()
+        if manager:
+            db.session.delete(manager)
+            db.session.commit()
+            response = jsonify({"message":"Manager successfully deleted"})
+            response.status_code = 202
+            return response
+        else:
+            abort(404, message="No manager with that Id")
