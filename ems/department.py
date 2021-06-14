@@ -1,0 +1,31 @@
+from flask import request, jsonify
+from flask_restful import Resource, abort
+from ems.models import Department, db
+from ems.auth import token_required_manager
+from ems.schemas import departments_schema, department_schema
+
+class DepartmentAPI(Resource):
+    def post(self):
+
+        if request.is_json:
+            title = request.json['department_title']
+            no_of_employees = request.json['no_of_employees']
+        else:
+            title = request.form['department_title']
+            no_of_employees = request.form['no_of_employees']
+
+        dept = Department.query.filter_by(department_title=title).first()
+
+        if dept:
+            abort(409, message='Department already exists')
+        else:
+            new_dept = Department(department_title=title,
+                                  no_of_employees=no_of_employees)
+            
+            db.session.add(new_dept)
+            db.session.commit()
+
+            result = department_schema.dump(new_dept)
+            response = jsonify(result)
+            response.status_code = 200
+            return response
