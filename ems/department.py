@@ -82,3 +82,14 @@ class DepartmentAPI(Resource):
 
         else:
             abort(404, message="No department with that Id")
+
+    def delete(self, dept_id):
+        dept = Department.query.filter_by(id=dept_id).first()
+        if dept:
+            db.session.delete(dept)
+            db.session.commit()
+            response = jsonify({"message":"Department successfully deleted"})
+            response.status_code = 202
+            return response
+        else:
+            abort(404, message="No department with that Id")
