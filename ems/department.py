@@ -29,3 +29,32 @@ class DepartmentAPI(Resource):
             response = jsonify(result)
             response.status_code = 200
             return response
+
+    def get(self, dept_id=None):
+        print("DEPARTMENT GET REQUEST RECIEVED")
+        if dept_id:
+            dept = Department.query.filter_by(id=dept_id).first()
+            if dept:
+                result = department_schema.dump(dept)
+                response = jsonify(result)
+                response.status_code = 201
+                response.headers.add('Access-Control-Allow-Origin', '*')
+                print("Response: ", response)
+                return response
+
+            else:
+                abort(404, message="No department found")
+        else:
+            dept = Department.query.all()
+            if dept:
+                results = departments_schema.dump(dept)
+                for i in range(len(dept)):
+                    results[i]["department_title"] = dept[i].department_title
+                    results[i]["no_of_employees"] = dept[i].no_of_employees
+                response = jsonify(results)
+                response.status_code = 201
+                response.headers.add('Access-Control-Allow-Origin', '*')
+                # print("datatype: ", type(result[1]))
+                return response
+            else:
+                abort(404, message="No departments found")
