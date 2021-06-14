@@ -58,3 +58,27 @@ class DepartmentAPI(Resource):
                 return response
             else:
                 abort(404, message="No departments found")
+
+    def put(self, dept_id):
+            
+        dept = Department.query.filter_by(id=dept_id).first()
+        if dept:
+            if request.is_json:
+                title = request.json['department_title']
+                no_of_employees = request.json['no_of_employees']
+            else:
+                title = request.form['department_title']
+                no_of_employees = request.form['no_of_employees']
+
+            dept.department_title = title
+            dept.no_of_employees = no_of_employees
+
+            db.session.commit()
+
+            result = department_schema.dump(dept)
+            response = jsonify(result)
+            response.status_code = 201
+            return response
+
+        else:
+            abort(404, message="No department with that Id")
