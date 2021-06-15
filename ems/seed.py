@@ -26,3 +26,32 @@ def db_create():
 def db_drop():
     db.drop_all()
     print("DB Dropped")
+
+
+
+@app.cli.command('db_seed')
+def db_seed():
+    admin_password = bcrypt.generate_password_hash('admin').decode('utf-8')
+    super_admin = User(username="admin", 
+                       password=admin_password,
+                       user_role="admin")
+
+    manager_password = bcrypt.generate_password_hash('manager').decode('utf-8')
+    manager = User(username="manager", 
+                       password=manager_password,
+                       user_role="manager")
+
+    db.session.add(super_admin)
+    db.session.add(manager)
+    db.session.commit()
+    print("Super admin and manager added")
+
+@app.cli.command('db_random_department')
+@click.argument('arg')
+def db_random_department(arg):
+    n = int(arg)
+    for i in range(n):
+        department = Department(department_title = randomword(7), no_of_employees = random.randint(50,100))
+        db.session.add(department)
+        db.session.commit()
+    print(f"{n} departments have been added.")
