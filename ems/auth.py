@@ -29,6 +29,33 @@ def token_required_admin(f):
 
     return decorated
 
+def token_required_manager(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+        if 'x-access-token' in request.headers:
+            token = request.headers['x-access-token']
+        if not token:
+            return {'message': 'Token is missing'}, 403
+
+        try:
+            print("#########################")
+            print("Token: ", token)
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
+            print("Data: ", data)
+            currentUser = User.query.filter_by(id=data['id']).first()
+            print("CurrentUser", currentUser)
+        except:
+            return {'message': 'Token is invalid'}, 401
+
+        if not currentUser.user_role != "admin":
+            return {'message' : 'You are not authorized'}, 401
+            
+        return f(*args, **kwargs)
+
+    return decorated
+
+
 @bp.route('/login', methods=['POST'])
 def login():
     # if current_user.is_authenticated():
