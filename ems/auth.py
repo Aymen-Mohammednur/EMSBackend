@@ -7,6 +7,28 @@ import datetime
 
 bp = Blueprint('auth', __name__)
 
+def token_required_admin(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+        if 'x-access-token' in request.headers:
+            token = request.headers['x-access-token']
+        if not token:
+            return {'message': 'Token is missing'}, 403
+
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
+            currentUser = User.query.filter_by(id=data['id']).first()
+        except:
+            return {'message': 'Token is invalid'}, 401
+
+        if not currentUser.user_role != "manager":
+            return {'message' : 'You are not authorized'}, 401
+
+        return f(*args, **kwargs)
+
+    return decorated
+
 @bp.route('/login', methods=['POST'])
 def login():
     # if current_user.is_authenticated():
