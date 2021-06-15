@@ -35,14 +35,12 @@ def getWorkHourSum(employee_id):
     value = db.session.query(func.sum(Attendance.work_time)).filter_by(employee_id=employee_id).all()
     db.session.query(Attendance).filter_by(employee_id=employee_id).delete()
     db.session.commit()
-    print("value:: ", value)
     if not value[0][0]:
         return 0
     return value[0][0]
 
 def getHourlyRate(employee_id):
     hourly_rate = Employee.query.filter_by(id=employee_id).first().hourly_rate
-    print("HOURLY RATEEEEE:: ", hourly_rate)
     return hourly_rate
 
 class SalaryAPI(Resource):
@@ -77,8 +75,6 @@ class SalaryAPI(Resource):
 
     @token_required_manager
     def get(self, emp_id):
-        # sal_tbl = Salary.query.filter_by(employee_id=emp_id).first()
-        # if sal_tbl:
         if not emp_id:
             abort(404, "unknown endpoint")
 
@@ -91,7 +87,6 @@ class SalaryAPI(Resource):
         return_json["net"] = value["net"]
         return_json["date"] = str(date.today().month) + '/' + str(date.today().day) + '/' + str(date.today().year)
         response = jsonify(return_json)
-        print("About to send: ", response)
 
         salary = Salary(date =return_json['date'],amount=return_json['amount'], tax=return_json['tax'], net=return_json['net'], employee_id=emp_id)
         db.session.add(salary)

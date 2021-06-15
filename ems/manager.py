@@ -8,11 +8,6 @@ from ems.auth import token_required_admin, db
 class ManagerAPI(Resource):
     @token_required_admin
     def post(self):
-        # try:
-        #     user_schema.load(request.json)
-        # except:
-        #     abort(400, message="Invalid Request")
-
         if request.is_json:
             username = request.json['username']
             password = request.json['password']
@@ -63,11 +58,7 @@ class ManagerAPI(Resource):
 
     @token_required_admin
     def put(self, user_id):
-        # try:
-        #     user_schema.load(request.json)
-        # except:
-        #     abort(400, message="Invalid Request")
-            
+ 
         manager = User.query.filter_by(id=user_id).first()
         if manager:
             if request.is_json:
