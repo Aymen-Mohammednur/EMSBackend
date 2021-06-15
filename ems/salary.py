@@ -8,6 +8,42 @@ from ems.bonus_cuts import *
 from datetime import date
 from sqlalchemy import func, select
 
+def calculate_salary(employee_id):
+    workHourSum = getWorkHourSum(employee_id)
+    gross = workHourSum*getHourlyRate(employee_id)
+    bonus = getBonusSum(employee_id)
+    gross_with_bonus = gross + bonus
+    net = gross_with_bonus - getTax()*gross_with_bonus
+    return {"net":net, "gross":gross_with_bonus, "bonus":bonus}
+
+
+def getTax():
+    return .15
+
+
+def getBonusSum(employee_id):
+    bnc = db.session.query(func.sum(BonusCuts.amount)).filter_by(employee_id=employee_id).all()
+    if not bnc[0][0]:
+        return 0
+    bon = BonusCuts.query.filter_by(employee_id=employee_id).all()
+    for b in bon: db.session.delete(b)
+    db.session.commit()
+    return bnc[0][0]
+
+    
+def getWorkHourSum(employee_id):
+    value = db.session.query(func.sum(Attendance.work_time)).filter_by(employee_id=employee_id).all()
+    db.session.query(Attendance).filter_by(employee_id=employee_id).delete()
+    db.session.commit()
+    print("value:: ", value)
+    if not value[0][0]:
+        return 0
+    return value[0][0]
+
+def getHourlyRate(employee_id):
+    hourly_rate = Employee.query.filter_by(id=employee_id).first().hourly_rate
+    print("HOURLY RATEEEEE:: ", hourly_rate)
+    return hourly_rate
 
 class SalaryAPI(Resource):
     @token_required_manager
@@ -48,6 +84,7 @@ class SalaryAPI(Resource):
 
         print('hello, I\'m here')
         return_json = {}
+        value = calculate_salary(emp_id)
         return_json["amount"] = value["gross"]
         return_json["tax"] = value["gross"]*getTax()
         return_json["bonus_cuts"] = value["bonus"]
