@@ -5,6 +5,7 @@ from ems.auth import token_required_manager
 from ems.schemas import departments_schema, department_schema
 
 class DepartmentAPI(Resource):
+    @token_required_manager
     def post(self):
 
         if request.is_json:
@@ -30,6 +31,7 @@ class DepartmentAPI(Resource):
             response.status_code = 200
             return response
 
+    @token_required_manager
     def get(self, dept_id=None):
         print("DEPARTMENT GET REQUEST RECIEVED")
         if dept_id:
@@ -59,6 +61,7 @@ class DepartmentAPI(Resource):
             else:
                 abort(404, message="No departments found")
 
+    @token_required_manager
     def put(self, dept_id):
             
         dept = Department.query.filter_by(id=dept_id).first()
@@ -83,6 +86,7 @@ class DepartmentAPI(Resource):
         else:
             abort(404, message="No department with that Id")
 
+    @token_required_manager
     def delete(self, dept_id):
         dept = Department.query.filter_by(id=dept_id).first()
         if dept:

@@ -6,6 +6,7 @@ from ems.schemas import employee_schema, employees_schema
 from collections import OrderedDict
 
 class EmployeeAPI(Resource):
+    @token_required_manager
     def post(self):
         print("**********")
         print("Response: ", request)
@@ -47,6 +48,7 @@ class EmployeeAPI(Resource):
             response.headers.add('Access-Control-Allow-Origin', '*')
             return response
 
+    @token_required_manager
     def get(self, employee_id=None):
         if employee_id:
             employee = Employee.query.filter_by(id=employee_id).first()
@@ -81,6 +83,7 @@ class EmployeeAPI(Resource):
             else:
                 abort(404, message="No employees found")
 
+    @token_required_manager
     def put(self, employee_id):
         # try:
         #     employee_schema.load(request.json)
@@ -121,7 +124,7 @@ class EmployeeAPI(Resource):
         else:
             abort(404, message="No employee with that Id")
 
-
+    @token_required_manager
     def delete(self, employee_id):
         employee = Employee.query.filter_by(id=employee_id).first()
         if employee:
