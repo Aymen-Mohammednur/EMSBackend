@@ -58,8 +58,6 @@ def token_required_manager(f):
 
 @bp.route('/login', methods=['POST'])
 def login():
-    # if current_user.is_authenticated():
-    #     return jsonify({'message': "Already logged in"})
 
     auth = request.authorization
 
@@ -74,7 +72,6 @@ def login():
         if bcrypt.check_password_hash(user.password, auth.password):
             if user.user_role == "admin":
                 token = jwt.encode({'id' : user.id, 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}, app.config['SECRET_KEY'], algorithm="HS256")
-                # token = jwt.encode({'id' : user.id}, app.config['SECRET_KEY'], algorithm="HS256")
                 # login_user(user)
                 session["type"] = user.user_role
                 # return jsonify({'message': "admin login successful"})
@@ -83,7 +80,6 @@ def login():
                 
             elif user.user_role == "manager":
                 token = jwt.encode({'id' : user.id, 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}, app.config['SECRET_KEY'], algorithm="HS256")
-                # token = jwt.encode({'id' : user.id}, app.config['SECRET_KEY'], algorithm="HS256")
                 # login_user(user)
                 session["type"] = user.user_role
                 # return jsonify({'message': "hr login successful"})
@@ -94,3 +90,9 @@ def login():
             
     except Exception:
         return abort(404, "Invalid credentials")
+
+@bp.route('/logout', methods=['POST'])
+def logout():
+    # logout_user()
+    session["type"] = ""
+    return jsonify({'message': "Logged out successfully"})  
